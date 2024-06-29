@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -14,14 +15,37 @@ class RecipeQuestionPanel extends JPanel {
         setBackground(Color.WHITE);
         setLayout(new BorderLayout());
 
-        // Add a JLabel for the drink name
+        JPanel drinkNamePanel = new JPanel();
+        drinkNamePanel.setLayout(new BorderLayout());
+        drinkNamePanel.setBackground(Color.WHITE);
+
         JLabel drinkNameLabel = new JLabel(drinkName + " Recipe");
         drinkNameLabel.setFont(new Font("Arial", Font.BOLD, 25));
         drinkNameLabel.setForeground(Color.BLACK);
-        drinkNameLabel.setBackground(Color.BLACK);
         drinkNameLabel.setBorder(new RoundedBorder(10, Color.LIGHT_GRAY));
         drinkNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        add(drinkNameLabel, BorderLayout.NORTH);
+        drinkNamePanel.add(drinkNameLabel, BorderLayout.NORTH);
+
+        JPanel instructionPanel = new JPanel();
+        instructionPanel.setLayout(new BorderLayout());
+
+        instructionPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Add padding
+
+        JLabel instructionLabel = new JLabel("Drag an ingredient from the 'Choices' section and drop it into the empty boxes to complete the recipe.");
+        instructionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        instructionLabel.setForeground(Color.BLACK);
+        instructionLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        instructionPanel.add(instructionLabel, BorderLayout.CENTER);
+
+
+        JPanel headerPanel = new JPanel();
+        headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.add(drinkNamePanel);
+        headerPanel.add(Box.createVerticalStrut(10));  // Add vertical spacing
+        headerPanel.add(instructionPanel);
+
+        add(headerPanel, BorderLayout.NORTH);
 
         dropTargetPanel = new JPanel();
         dropTargetPanel.setLayout(new BoxLayout(dropTargetPanel, BoxLayout.Y_AXIS));
@@ -45,7 +69,6 @@ class RecipeQuestionPanel extends JPanel {
         dragSourcePanel.setBackground(Color.WHITE);
         dragSourcePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Add padding around the drag source panel
 
-        // Add a JLabel for the choices section
         JLabel choicesLabel = new JLabel("Choices");
         choicesLabel.setFont(new Font("Arial", Font.BOLD, 20));
         choicesLabel.setBorder(new RoundedBorder(10, Color.LIGHT_GRAY));
@@ -95,5 +118,28 @@ class RecipeQuestionPanel extends JPanel {
 
     public String getQuestionTitle() {
         return questionTitle;
+    }
+
+    private static class RoundedBorder implements Border {
+        private int radius;
+        private Color borderColor;
+
+        RoundedBorder(int radius, Color color) {
+            this.radius = radius;
+            this.borderColor = color;
+        }
+
+        public Insets getBorderInsets(Component c) {
+            return new Insets(this.radius + 1, this.radius + 1, this.radius + 1, this.radius + 1);
+        }
+
+        public boolean isBorderOpaque() {
+            return true;
+        }
+
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            g.setColor(borderColor);
+            g.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
+        }
     }
 }
