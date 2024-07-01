@@ -1,6 +1,14 @@
 import javax.swing.border.Border;
 import java.awt.*;
 
+/*
+ * Author:
+ * Go, Mardelito Tutor
+ * Joshua Famor
+ * BSCS - A121
+ * BrewAcademy
+ */
+
 public class RoundedBorder implements Border {
     private int radius;
     private Color color;

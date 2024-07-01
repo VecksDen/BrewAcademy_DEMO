@@ -1,33 +1,41 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+
+/*
+ * Author:
+ * Go, Mardelito Tutor
+ * Joshua Famor
+ * BSCS - A121
+ * BrewAcademy
+ */
 
 public class QuizPanel extends JPanel {
 
     private ArrayList<RecipeQuestionPanel> questionPanels;
     private ArrayList<CustomerServiceQuestionPanel> customerServicePanels;
+    private Database database;
 
     public QuizPanel(String userName) {
         setLayout(new BorderLayout());
-        setOpaque(false); // Transparent background
+        setOpaque(false);
 
         questionPanels = new ArrayList<>();
         customerServicePanels = new ArrayList<>();
+        database = new Database("results.txt");
 
         initializeQuestions();
         setupQuizComponents(userName);
     }
 
     private void initializeQuestions() {
-        // Coffee preparation questions
+        //Coffee preparation questions
         questionPanels.add(new RecipeQuestionPanel("Latte", new String[]{"Espresso", "Steamed Milk", "Foam"}, new String[]{"Espresso", "Steamed Milk", "Foam", "Chocolate Syrup", "Whipped Cream"}));
         questionPanels.add(new RecipeQuestionPanel("Cappuccino", new String[]{"Espresso", "Steamed Milk", "Foam"}, new String[]{"Espresso", "Steamed Milk", "Foam", "Cinnamon", "Honey"}));
         questionPanels.add(new RecipeQuestionPanel("Americano", new String[]{"Espresso", "Hot Water"}, new String[]{"Espresso", "Hot Water", "Cold Milk", "Ice", "Lemon Slice"}));
 
-        // Customer service questions
+        //Customer service questions
         customerServicePanels.add(new CustomerServiceQuestionPanel("What do you do if a customer is unhappy with their drink?", new String[]{
                 "A: Ignore the complaint",
                 "B: Offer a replacement",
@@ -46,26 +54,26 @@ public class QuizPanel extends JPanel {
     private void setupQuizComponents(String userName) {
         CardLayout cardLayout = new CardLayout();
         JPanel questionContainer = new JPanel(cardLayout);
-        questionContainer.setOpaque(false); // Transparent background
+        questionContainer.setOpaque(false);
 
-        // Add question panels
+        //Add question panels
         for (RecipeQuestionPanel qp : questionPanels) {
             questionContainer.add(qp, qp.getQuestionTitle());
         }
 
-        // Add customer service panels
+        //Add customer service panels
         for (CustomerServiceQuestionPanel csqp : customerServicePanels) {
             questionContainer.add(csqp, csqp.getQuestionTitle());
         }
 
         add(questionContainer, BorderLayout.CENTER);
 
-        // Navigation panel
+        //Navigation panel
         JPanel navigationPanel = new JPanel();
         navigationPanel.setBackground(Color.WHITE);
         navigationPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
-        // Previous button
+        //Previous button
         JButton previousButton = new JButton("Previous Question");
         previousButton.setFont(new Font("Arial", Font.BOLD, 12));
         previousButton.setForeground(Color.BLACK);
@@ -75,7 +83,7 @@ public class QuizPanel extends JPanel {
         previousButton.addActionListener(e -> showPreviousQuestion(questionContainer, cardLayout));
         navigationPanel.add(previousButton);
 
-        // Next button
+        //Next button
         JButton nextButton = new JButton("Next Question");
         nextButton.setFont(new Font("Arial", Font.BOLD, 12));
         nextButton.setForeground(Color.BLACK);
@@ -85,7 +93,7 @@ public class QuizPanel extends JPanel {
         nextButton.addActionListener(e -> showNextQuestion(questionContainer, cardLayout));
         navigationPanel.add(nextButton);
 
-        // Submit button
+        //Submit button
         JButton submitButton = new JButton("Submit Test");
         submitButton.setFont(new Font("Arial", Font.BOLD, 12));
         submitButton.setForeground(Color.WHITE);
@@ -112,7 +120,7 @@ public class QuizPanel extends JPanel {
         String resultMessage = "Your score: " + score + " out of " + total;
         JOptionPane.showMessageDialog(this, resultMessage);
 
-        saveResultToFile(userName, score, total);
+        saveResult(userName, score);
     }
 
     private int calculateScore() {
@@ -130,12 +138,9 @@ public class QuizPanel extends JPanel {
         return score;
     }
 
-    private void saveResultToFile(String name, int score, int total) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("results.txt", true))) {
-            writer.write("Name: " + name + ", Score: " + score + " out of " + total);
-            writer.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void saveResult(String name, int score) {
+        String date = new Date().toString();
+        String record = name + "#" + score + "#" + date;
+        database.storeToFile(record);
     }
 }
